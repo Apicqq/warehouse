@@ -1,8 +1,12 @@
 from fastapi import FastAPI
 
-app = FastAPI()
+from app.api.routers import main_router
 
+app = FastAPI(
+    docs_url="/swagger"
+)
 
+app.include_router(main_router)
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
