@@ -1,12 +1,20 @@
 from fastapi import APIRouter
 
+from app.crud.product import product_crud
+from app.api import SessionDependency
+from app.models import Product
 
 router = APIRouter()
 
 
 @router.post("/")
-async def create_product():
-    pass
+async def create_product(
+        product,
+        session: SessionDependency
+) -> Product:
+    return await product_crud.create(
+        obj_in=product, session=session
+    )
 
 
 @router.get("/")

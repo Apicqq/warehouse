@@ -17,7 +17,7 @@ async def orders_list():
 async def order_detail(order_id: int):
     pass
 
-@router.patch("/{order_id}")
-async def update_order(order_id: int):
-    pass
 
+@router.patch("/{order_id}/status")
+async def update_order_status(order_id: int):
+    pass
