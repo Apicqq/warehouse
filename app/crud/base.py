@@ -1,6 +1,8 @@
-from collections.abc import Sequence
-from typing import Generic, TypeVar, Optional, List
+from http import HTTPStatus
+from typing import Generic, TypeVar, Optional, Sequence
 
+from fastapi import HTTPException
+from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,13 +19,20 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def __init__(self, model: type[ModelType]):
         self.model = model
 
-    async def get(
+    async def get_or_404(
             self, obj_id: int, session: AsyncSession
     ) -> Optional[ModelType]:
         obj = await session.execute(
             select(self.model).where(self.model.id == obj_id)
         )
-        return obj.scalars().first()
+        db_obj = obj.scalars().first()
+        if db_obj is not None:
+            return db_obj
+        else:
+            raise HTTPException(
+                status_code=HTTPStatus.NOT_FOUND,
+                detail=f"{self.model.__name__} not found"
+            )
 
     async def get_list(self, session: AsyncSession) -> Sequence[ModelType]:
         objs = await session.execute(select(self.model))
@@ -37,7 +46,28 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         obj_in_data = obj_in.model_dump()
         db_obj = self.model(**obj_in_data)
         session.add(db_obj)
+        return await self.push_to_db(db_obj, session)
+
+    async def update(
+            self,
+            db_obj: ModelType,
+            obj_in: UpdateSchemaType,
+            session: AsyncSession,
+    ) -> ModelType:
+        obj_data = jsonable_encoder(db_obj)
+        update_data = obj_in.model_dump(exclude_unset=True)
+        for field in obj_data:
+            if field in update_data:
+                setattr(db_obj, field, update_data[field])
+        session.add(db_obj)
+        return await self.push_to_db(db_obj, session)
+
+    async def delete(self, db_obj: ModelType, session: AsyncSession):
+        await session.delete(db_obj)
         await session.commit()
-        await session.refresh(db_obj)
         return db_obj
-   
+
+    async def push_to_db(self, obj: Base, session: AsyncSession):
+        await session.commit()
+        await session.refresh(obj)
+        return obj
