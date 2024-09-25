@@ -1,5 +1,5 @@
 from datetime import datetime
-from enum import StrEnum, auto
+from enum import Enum
 
 from sqlalchemy import Integer, ForeignKey, CheckConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -7,10 +7,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.db import Base
 
 
-class OrderStatus(StrEnum):
-    in_process = auto()
-    sent = auto()
-    delivered = auto()
+class OrderStatus(Enum):
+    in_process = "in_process"
+    sent = "sent"
+    delivered = "delivered"
 
 
 class Order(Base):
