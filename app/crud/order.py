@@ -75,7 +75,7 @@ class CRUDOrder(CRUDBase[Order, OrderCreate, OrderUpdate]):
             product = product.scalars().first()
             if product.amount_available < quantity:
                 raise HTTPException(
-                    status_code=400,
+                    status_code=HTTPStatus.BAD_REQUEST,
                     detail=f"Не удалось создать заказ:"
                     f" на складе недостаточно товара {product.name}",
                 )
