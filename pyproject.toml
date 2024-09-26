@@ -16,6 +16,24 @@ python-dotenv = "^1.0.1"
 pydantic-settings = "^2.5.2"
 
 
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.3"
+pytest-asyncio = "^0.24.0"
+mixer = "^7.2.2"
+httpx = "^0.27.2"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.8.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+pythonpath = "app/"
+norecursedirs = ".venv/*"
+testpaths = ["tests"]
+python_files = "test_*.py"
+asyncio_default_fixture_loop_scope = "function"
