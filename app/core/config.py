@@ -12,7 +12,7 @@ class Settings(BaseSettings):
         f":{os.getenv('DB_PORT')}/"
         f"{os.getenv('POSTGRES_DB')}"
     )
-    sqlite_db_url: str = "sqlite+aiosqlite:///./Notes.db"
+    sqlite_db_url: str = "sqlite+aiosqlite:///./Warehouse.db"
     secret: str = "VERY_SECRET_SECRET"
     model_config: SettingsConfigDict = SettingsConfigDict(
         env_file=".env", extra="ignore"
