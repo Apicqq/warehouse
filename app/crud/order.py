@@ -9,16 +9,18 @@ from sqlalchemy.orm import selectinload
 from app.crud.base import CRUDBase
 from app.models.product import Product
 from app.models.order import Order, OrderItem, OrderStatus
-from app.schemas.order import OrderCreate, OrderUpdate, OrderItemCreate, \
-    OrderDB
+from app.schemas.order import (
+    OrderCreate,
+    OrderUpdate,
+    OrderItemCreate,
+    OrderDB,
+)
 
 
 class CRUDOrder(CRUDBase[Order, OrderCreate, OrderUpdate]):
 
     async def create_order(
-            self,
-            obj_in: OrderCreate,
-            session: AsyncSession
+        self, obj_in: OrderCreate, session: AsyncSession
     ) -> OrderDB:
         """
         Создать новый заказ.
@@ -34,9 +36,7 @@ class CRUDOrder(CRUDBase[Order, OrderCreate, OrderUpdate]):
         session.add(db_order)
         await session.flush()
         order_id = db_order.id
-        await self._manage_product_stock(
-            session, order_items
-        )
+        await self._manage_product_stock(session, order_items)
         for order_item in order_items:
             session.add(
                 OrderItem(**order_item.model_dump(), order_id=order_id)
@@ -48,9 +48,7 @@ class CRUDOrder(CRUDBase[Order, OrderCreate, OrderUpdate]):
         return OrderDB.model_validate(db_order)
 
     async def _manage_product_stock(
-            self,
-            session: AsyncSession,
-            order_items: list[OrderItemCreate]
+        self, session: AsyncSession, order_items: list[OrderItemCreate]
     ) -> None:
         """
         Вспомогательный метод для метода создания заказа, который проверяет
@@ -79,25 +77,23 @@ class CRUDOrder(CRUDBase[Order, OrderCreate, OrderUpdate]):
                 raise HTTPException(
                     status_code=400,
                     detail=f"Не удалось создать заказ:"
-                           f" на складе недостаточно товара {product.name}"
+                    f" на складе недостаточно товара {product.name}",
                 )
             product.amount_available -= quantity
             session.add(product)
         await session.commit()
 
     async def get_order_by_id_or_404(
-            self,
-            order_id: int,
-            session: AsyncSession
+        self, order_id: int, session: AsyncSession
     ) -> Optional[Order]:
         """
         Вернуть объект заказа по его ID либо вернуть ошибку 404, если такой
         объект не существует.
         """
         obj = await session.execute(
-            select(self.model).where(self.model.id == order_id).options(
-                selectinload(Order.order_items)
-            )
+            select(self.model)
+            .where(self.model.id == order_id)
+            .options(selectinload(Order.order_items))
         )
         db_obj = obj.scalars().first()
         if db_obj is not None:
@@ -105,33 +101,26 @@ class CRUDOrder(CRUDBase[Order, OrderCreate, OrderUpdate]):
         else:
             raise HTTPException(
                 status_code=HTTPStatus.NOT_FOUND,
-                detail=f"{self.model.__name__} not found"
+                detail=f"{self.model.__name__} not found",
             )
 
-    async def get_orders_list(
-            self,
-            session: AsyncSession
-    ) -> Sequence[Order]:
+    async def get_orders_list(self, session: AsyncSession) -> Sequence[Order]:
         """
         Вернуть список всех заказов.
         """
-        objs = await session.execute(select(self.model).options(
-            selectinload(Order.order_items)
-        ))
+        objs = await session.execute(
+            select(self.model).options(selectinload(Order.order_items))
+        )
         return objs.scalars().all()
 
     async def change_order_status(
-            self,
-            order_id: int,
-            status: OrderStatus,
-            session: AsyncSession
+        self, order_id: int, status: OrderStatus, session: AsyncSession
     ) -> Optional[Order]:
         """
         Изменить статус заказа.
         """
         obj = await self.get_order_by_id_or_404(
-            order_id=order_id,
-            session=session
+            order_id=order_id, session=session
         )
         obj.status = status
         session.add(obj)

@@ -8,8 +8,7 @@ class Product(Base):
     __table_args__ = (
         CheckConstraint("price > 0", name="positive_price"),
         CheckConstraint(
-            "amount_available >= 0",
-            name="non-negative_amount_available"
+            "amount_available >= 0", name="non-negative_amount_available"
         ),
     )
 

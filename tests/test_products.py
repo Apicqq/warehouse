@@ -4,6 +4,7 @@ import pytest
 
 PRODUCTS_URL = "/products"
 
+
 def test_create_product_valid_data(client):
     product_data = {
         "name": "test",
@@ -30,7 +31,7 @@ def test_create_product_valid_data(client):
     [
         ("price", -100),
         ("amount_available", -10),
-    ]
+    ],
 )
 def test_create_product_invalid_data(client, field, invalid_value):
     product_invalid_data = dict(

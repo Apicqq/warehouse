@@ -28,10 +28,7 @@ class Order(Base):
 
 class OrderItem(Base):
     __table_args__ = (
-        CheckConstraint(
-            "quantity > 0",
-            name="positive_quantity"
-        ),
+        CheckConstraint("quantity > 0", name="positive_quantity"),
     )
     order_id: Mapped[int] = mapped_column(Integer, ForeignKey("order.id"))
     product_id: Mapped[int] = mapped_column(Integer, ForeignKey("product.id"))

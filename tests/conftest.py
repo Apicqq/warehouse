@@ -43,9 +43,7 @@ def mixer():
 
 @pytest.fixture
 def client():
-    app.dependency_overrides = {
-        get_async_session: get_async_testing_session
-    }
+    app.dependency_overrides = {get_async_session: get_async_testing_session}
     with TestClient(app) as client:
         yield client
 

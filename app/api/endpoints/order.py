@@ -13,11 +13,10 @@ router = APIRouter()
 @router.post(
     "/",
     response_model=OrderDB,
-    responses={HTTPStatus.BAD_REQUEST: {"model": Message}}
+    responses={HTTPStatus.BAD_REQUEST: {"model": Message}},
 )
 async def create_order(
-        order: OrderCreate,
-        session: SessionDependency
+    order: OrderCreate, session: SessionDependency
 ) -> OrderDB:
     """
     Создать новый заказ.
@@ -36,7 +35,7 @@ async def orders_list(session: SessionDependency) -> list[OrderDB]:
 @router.get(
     "/{order_id}",
     response_model=OrderDB,
-    responses={HTTPStatus.NOT_FOUND: {"model": Message}}
+    responses={HTTPStatus.NOT_FOUND: {"model": Message}},
 )
 async def order_detail(order_id: int, session: SessionDependency) -> OrderDB:
     """
@@ -52,18 +51,16 @@ async def order_detail(order_id: int, session: SessionDependency) -> OrderDB:
     response_model=OrderDB,
     responses={
         HTTPStatus.NOT_FOUND: {"model": Message},
-    }
+    },
 )
 async def update_order_status(
-        order_id: int,
-        status: OrderStatus,
-        session: SessionDependency,
+    order_id: int,
+    status: OrderStatus,
+    session: SessionDependency,
 ) -> OrderDB:
     """
     Изменить статус заказа.
     """
     return await order_crud.change_order_status(
-        order_id=order_id,
-        status=status,
-        session=session
+        order_id=order_id, status=status, session=session
     )

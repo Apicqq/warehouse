@@ -20,7 +20,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self.model = model
 
     async def get_or_404(
-            self, obj_id: int, session: AsyncSession
+        self, obj_id: int, session: AsyncSession
     ) -> Optional[ModelType]:
         """
         Получить объект по его ID либо вернуть ошибку 404, если такой объект
@@ -35,7 +35,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         else:
             raise HTTPException(
                 status_code=HTTPStatus.NOT_FOUND,
-                detail=f"{self.model.__name__} not found"
+                detail=f"{self.model.__name__} not found",
             )
 
     async def get_list(self, session: AsyncSession) -> Sequence[ModelType]:
@@ -46,9 +46,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return objs.scalars().all()
 
     async def create(
-            self,
-            obj_in: CreateSchemaType,
-            session: AsyncSession
+        self, obj_in: CreateSchemaType, session: AsyncSession
     ) -> ModelType:
         """
         Создать новый объект указанной модели.
@@ -59,10 +57,10 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return await self.push_to_db(db_obj, session)
 
     async def update(
-            self,
-            db_obj: ModelType,
-            obj_in: UpdateSchemaType,
-            session: AsyncSession,
+        self,
+        db_obj: ModelType,
+        obj_in: UpdateSchemaType,
+        session: AsyncSession,
     ) -> ModelType:
         """
         Обновить объект указанной модели.

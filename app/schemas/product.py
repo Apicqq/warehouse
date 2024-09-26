@@ -4,16 +4,8 @@ from pydantic import BaseModel, PositiveInt, NonNegativeInt, Field, ConfigDict
 
 
 class ProductBase(BaseModel):
-    name: Optional[str] = Field(
-        None,
-        min_length=1,
-        max_length=255
-    )
-    description: Optional[str] = Field(
-        None,
-        min_length=1,
-        max_length=255
-    )
+    name: Optional[str] = Field(None, min_length=1, max_length=255)
+    description: Optional[str] = Field(None, min_length=1, max_length=255)
     price: Optional[PositiveInt]
     amount_available: Optional[NonNegativeInt]
 

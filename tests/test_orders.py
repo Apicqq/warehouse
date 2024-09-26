@@ -2,6 +2,7 @@ from http import HTTPStatus
 
 ORDER_URL = "/orders"
 
+
 def test_get_order_by_id(client, order):
     response = client.get(f"{ORDER_URL}/{order.id}")
     assert response.status_code == HTTPStatus.OK, (
@@ -20,7 +21,7 @@ def test_get_order_by_id(client, order):
 
 def test_get_orders_list(client, order_list):
     response = client.get(ORDER_URL)
-    assert response.status_code == HTTPStatus.OK    , (
+    assert response.status_code == HTTPStatus.OK, (
         "Проверьте, что при GET-запросе по адресу "
         "/orders возвращается список заказов."
     )
@@ -38,12 +39,7 @@ def test_get_orders_list(client, order_list):
 def test_create_order_valid_data(client, product_with_certain_stock):
     valid_order_data = {
         "status": "in_process",
-        "order_items": [
-            {
-                "product_id": 1,
-                "quantity": 5
-            }
-        ]
+        "order_items": [{"product_id": 1, "quantity": 5}],
     }
     response = client.post(ORDER_URL, json=valid_order_data)
     assert response.status_code == HTTPStatus.OK, (
@@ -56,21 +52,16 @@ def test_create_order_valid_data(client, product_with_certain_stock):
         "товара на складе."
     )
 
+
 def test_create_order_multiple_order_items_of_same_product(
     client, product_with_certain_stock
 ):
     valid_order_data = {
         "status": "in_process",
         "order_items": [
-            {
-                "product_id": 1,
-                "quantity": 5
-            },
-            {
-                "product_id": 1,
-                "quantity": 5
-            }
-        ]
+            {"product_id": 1, "quantity": 5},
+            {"product_id": 1, "quantity": 5},
+        ],
     }
     response = client.post(ORDER_URL, json=valid_order_data)
     assert response.status_code == HTTPStatus.OK, (
@@ -84,15 +75,11 @@ def test_create_order_multiple_order_items_of_same_product(
         " количество единиц товара на складе."
     )
 
+
 def test_create_order_insufficient_stock(client, product_with_certain_stock):
     invalid_order_data = {
         "status": "in_process",
-        "order_items": [
-            {
-                "product_id": 1,
-                "quantity": 100
-            }
-        ]
+        "order_items": [{"product_id": 1, "quantity": 100}],
     }
     response = client.post(ORDER_URL, json=invalid_order_data)
     assert response.status_code == HTTPStatus.BAD_REQUEST, (
@@ -107,8 +94,9 @@ def test_create_order_insufficient_stock(client, product_with_certain_stock):
 
 
 def test_change_order_status_valid_data(client, order):
-    response = client.patch(f"/orders/{order.id}/status",
-                            params={"status": "delivered"})
+    response = client.patch(
+        f"/orders/{order.id}/status", params={"status": "delivered"}
+    )
     assert response.status_code == HTTPStatus.OK, (
         "Проверьте, что при PATCH-запросе по адресу "
         "/orders/<int:order_id>/status изменяется статус заказа."
@@ -116,8 +104,9 @@ def test_change_order_status_valid_data(client, order):
 
 
 def test_change_order_status_invalid_data(client, order):
-    response = client.patch(f"/orders/{order.id}/status",
-                            params={"status": "invalid"})
+    response = client.patch(
+        f"/orders/{order.id}/status", params={"status": "invalid"}
+    )
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY, (
         "Проверьте, что при PATCH-запросе по адресу "
         "/orders/<int:order_id>/status с некорректным значением статуса "
