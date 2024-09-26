@@ -16,6 +16,9 @@ async def create_product(
         product: ProductCreate,
         session: SessionDependency
 ) -> Product:
+    """
+    Создать новый продукт.
+    """
     return await product_crud.create(
         obj_in=product, session=session
     )
@@ -25,6 +28,9 @@ async def create_product(
 async def products_list(
         session: SessionDependency
 ) -> list[Product]:
+    """
+    Вывести список существующих продуктов.
+    """
     return await product_crud.get_list(session=session)
 
 
@@ -34,6 +40,9 @@ async def products_list(
 )
 async def product_detail(product_id: int,
                          session: SessionDependency) -> Product:
+    """
+    Вывести информацию о конкретном продукте.
+    """
     return await product_crud.get_or_404(obj_id=product_id, session=session)
 
 
@@ -46,11 +55,20 @@ async def update_product(
         obj_in: ProductUpdate,
         session: SessionDependency
 ) -> Product:
+    """
+    Обновить информацию о конкретном продукте.
+    """
     product = await product_crud.get_or_404(obj_id=product_id, session=session)
     return await product_crud.update(product, obj_in, session)
 
 
 @router.delete("/{product_id}", response_model=ProductDB)
-async def delete_product(product_id: int, session: SessionDependency):
+async def delete_product(
+        product_id: int,
+        session: SessionDependency
+) -> Product:
+    """
+    Удалить конкретный продукт.
+    """
     product = await product_crud.get_or_404(obj_id=product_id, session=session)
     return await product_crud.delete(product, session)

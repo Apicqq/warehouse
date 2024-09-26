@@ -22,6 +22,10 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     async def get_or_404(
             self, obj_id: int, session: AsyncSession
     ) -> Optional[ModelType]:
+        """
+        Получить объект по его ID либо вернуть ошибку 404, если такой объект
+        не существует.
+        """
         obj = await session.execute(
             select(self.model).where(self.model.id == obj_id)
         )
@@ -35,6 +39,9 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             )
 
     async def get_list(self, session: AsyncSession) -> Sequence[ModelType]:
+        """
+        Вернуть список всех объектов указанной модели.
+        """
         objs = await session.execute(select(self.model))
         return objs.scalars().all()
 
@@ -43,6 +50,9 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             obj_in: CreateSchemaType,
             session: AsyncSession
     ) -> ModelType:
+        """
+        Создать новый объект указанной модели.
+        """
         obj_in_data = obj_in.model_dump()
         db_obj = self.model(**obj_in_data)
         session.add(db_obj)
@@ -54,6 +64,9 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             obj_in: UpdateSchemaType,
             session: AsyncSession,
     ) -> ModelType:
+        """
+        Обновить объект указанной модели.
+        """
         obj_data = jsonable_encoder(db_obj)
         update_data = obj_in.model_dump(exclude_unset=True)
         for field in obj_data:
@@ -63,11 +76,17 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return await self.push_to_db(db_obj, session)
 
     async def delete(self, db_obj: ModelType, session: AsyncSession):
+        """
+        Удалить объект указанной модели.
+        """
         await session.delete(db_obj)
         await session.commit()
         return db_obj
 
     async def push_to_db(self, obj: Base, session: AsyncSession):
+        """
+        Поместить объект в базу данных.
+        """
         await session.commit()
         await session.refresh(obj)
         return obj
