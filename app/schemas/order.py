@@ -35,3 +35,8 @@ class OrderDB(OrderBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+class Message(BaseModel):
+    message: str
+
+class OrderChangeStatus(BaseModel):
+    status: OrderStatus
