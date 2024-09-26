@@ -74,10 +74,10 @@ def test_update_product(client, product):
         amount_available=10,
         description="test description",
     )
-    response = client.put(f"{PRODUCTS_URL}{product.id}", json=new_product_data)
+    response = client.put(f"{PRODUCTS_URL}/{product.id}", json=new_product_data)
     assert response.status_code == HTTPStatus.OK, (
         "Проверьте, что при PUT-запросе по адресу "
-        f"{PRODUCTS_URL}{product.id} изменяется информация о продукте."
+        f"{PRODUCTS_URL}/<int:product_id> изменяется информация о продукте."
     )
     response_data = response.json()
     for field in new_product_data:
