@@ -73,7 +73,11 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         session.add(db_obj)
         return await self.push_to_db(db_obj, session)
 
-    async def delete(self, db_obj: ModelType, session: AsyncSession):
+    async def delete(
+            self,
+            db_obj: ModelType,
+            session: AsyncSession
+    ) -> ModelType:
         """
         Удалить объект указанной модели.
         """
@@ -81,7 +85,11 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         await session.commit()
         return db_obj
 
-    async def push_to_db(self, obj: Base, session: AsyncSession):
+    async def push_to_db(
+            self,
+            obj: Base,
+            session: AsyncSession
+    ) -> Base:
         """
         Поместить объект в базу данных.
         """

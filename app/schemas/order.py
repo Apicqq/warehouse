@@ -43,7 +43,3 @@ class OrderDB(OrderBase):
 
 class Message(BaseModel):
     message: str
-
-
-class OrderChangeStatus(BaseModel):
-    status: OrderStatus
